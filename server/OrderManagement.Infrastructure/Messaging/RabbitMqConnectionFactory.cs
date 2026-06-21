@@ -39,13 +39,13 @@ public class RabbitMqConnectionFactory : IRabbitMqConnectionFactory
         try
         {
             var connection = factory.CreateConnection();
-            _logger.LogInformation("RabbitMQ connection established: {HostName}:{Port}", 
+            _logger.LogInformation("RabbitMQ connection established: {HostName}:{Port}",
                 _settings.HostName, _settings.Port);
             return connection;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to create RabbitMQ connection to {HostName}:{Port}", 
+            _logger.LogError(ex, "Failed to create RabbitMQ connection to {HostName}:{Port}",
                 _settings.HostName, _settings.Port);
             throw;
         }

@@ -32,8 +32,9 @@ public class EndToEndEventFlowTests
 
     private async Task<string> CreateCustomerAndGetId(HttpClient client, string name)
     {
-        var customerRequest = new { 
-            id = Guid.NewGuid(), 
+        var customerRequest = new
+        {
+            id = Guid.NewGuid(),
             name = name,
             email = $"{name.ToLower()}@test.com",
             phone = "+1234567890",
@@ -53,7 +54,8 @@ public class EndToEndEventFlowTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client, "Event Test Customer");
 
-        var orderRequest = new {
+        var orderRequest = new
+        {
             customerId = customerId,
             totalAmount = 150.00m,
             currencyCode = "USD",
@@ -83,7 +85,7 @@ public class EndToEndEventFlowTests
         // Assert
         Assert.That(orderId, Is.Not.Null);
         Assert.That(messageList.Count, Is.GreaterThan(0), "Outbox should contain at least one unprocessed event");
-        
+
         var orderCreatedEvent = messageList.Find(m => m.EventType.Contains("OrderCreatedEvent"));
         Assert.That(orderCreatedEvent, Is.Not.Null);
         Assert.That(orderCreatedEvent.Processed, Is.False);
@@ -98,7 +100,8 @@ public class EndToEndEventFlowTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client, "Status Test Customer");
 
-        var orderRequest = new {
+        var orderRequest = new
+        {
             customerId = customerId,
             totalAmount = 200.00m,
             currencyCode = "EUR",
@@ -117,7 +120,8 @@ public class EndToEndEventFlowTests
         var orderId = order.GetProperty("id").GetString();
 
         // Act - Update order status
-        var updateRequest = new {
+        var updateRequest = new
+        {
             status = "Fulfilled",
             reason = "Order fulfilled"
         };
@@ -135,7 +139,7 @@ public class EndToEndEventFlowTests
         // Assert
         Assert.That(updateResponse.IsSuccessStatusCode, Is.True);
         Assert.That(messageList.Count, Is.GreaterThan(0), "Outbox should contain status change event");
-        
+
         var statusChangeEvent = messageList.Find(m => m.EventType.Contains("OrderStatusChangedEvent"));
         Assert.That(statusChangeEvent, Is.Not.Null);
         Assert.That(statusChangeEvent.Payload, Does.Contain("Fulfilled"));
@@ -152,7 +156,8 @@ public class EndToEndEventFlowTests
         var orderIds = new List<string>();
         for (int i = 0; i < 3; i++)
         {
-            var orderRequest = new {
+            var orderRequest = new
+            {
                 customerId = customerId,
                 totalAmount = 50.00m * (i + 1),
                 currencyCode = "USD",

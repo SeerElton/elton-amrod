@@ -141,9 +141,9 @@ public class OutboxRepositoryTests
         {
             Id = Guid.NewGuid(),
             EventType = "OrderStatusChangedEvent",
-            Payload = JsonSerializer.Serialize(new 
-            { 
-                OrderId = Guid.NewGuid(), 
+            Payload = JsonSerializer.Serialize(new
+            {
+                OrderId = Guid.NewGuid(),
                 Status = "Fulfilled"
             }),
             Processed = false,

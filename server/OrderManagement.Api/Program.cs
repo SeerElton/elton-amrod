@@ -47,7 +47,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 
 // RabbitMQ Configuration
-var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>() 
+var rabbitMqSettings = builder.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>()
     ?? new RabbitMqSettings();
 builder.Services.AddSingleton(rabbitMqSettings);
 builder.Services.AddSingleton<IRabbitMqConnectionFactory, RabbitMqConnectionFactory>();

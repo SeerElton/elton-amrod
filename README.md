@@ -3,6 +3,7 @@
 A production-ready Order Management System demonstrating clean architecture, event-driven design, messaging reliability, API-first development, and scalable engineering practices.
 
 **Key Documentation**:
+
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Docker Compose and Kubernetes/Helm deployment guide
 
 ---

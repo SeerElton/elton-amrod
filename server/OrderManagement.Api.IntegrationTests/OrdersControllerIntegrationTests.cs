@@ -32,9 +32,10 @@ public class OrdersControllerIntegrationTests
 
     private async Task<string> CreateCustomerAndGetId(HttpClient client)
     {
-        var customerRequest = new { 
-            id = Guid.NewGuid(), 
-            name = "Test Customer", 
+        var customerRequest = new
+        {
+            id = Guid.NewGuid(),
+            name = "Test Customer",
             email = "test@example.com",
             phone = "+1234567890",
             address = "123 Main St",
@@ -53,7 +54,8 @@ public class OrdersControllerIntegrationTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client);
 
-        var orderRequest = new {
+        var orderRequest = new
+        {
             customerId = customerId,
             totalAmount = 99.99m,
             currencyCode = "USD",
@@ -71,10 +73,10 @@ public class OrdersControllerIntegrationTests
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.Created));
-        
+
         var content = await response.Content.ReadAsStringAsync();
         var order = JsonSerializer.Deserialize<JsonElement>(content);
-        
+
         Assert.That(order, Is.Not.Null);
         Assert.That(order.GetProperty("id").GetString(), Is.Not.EqualTo(Guid.Empty.ToString()));
         Assert.That(order.GetProperty("customerId").GetString(), Is.EqualTo(customerId));
@@ -88,7 +90,8 @@ public class OrdersControllerIntegrationTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client);
 
-        var orderRequest = new {
+        var orderRequest = new
+        {
             customerId = customerId,
             totalAmount = 99.99m,
             currencyCode = "USD",
@@ -111,7 +114,7 @@ public class OrdersControllerIntegrationTests
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        
+
         var content = await response.Content.ReadAsStringAsync();
         var retrieved = JsonSerializer.Deserialize<JsonElement>(content);
         Assert.That(retrieved.GetProperty("id").GetString(), Is.EqualTo(orderId));
@@ -145,7 +148,8 @@ public class OrdersControllerIntegrationTests
     public async Task CreateOrder_WithMissingCustomerId_ReturnsBadRequest()
     {
         // Arrange
-        var invalidRequest = new {
+        var invalidRequest = new
+        {
             totalAmount = 99.99m,
             currencyCode = "USD",
             lineItems = new[] {
@@ -170,7 +174,8 @@ public class OrdersControllerIntegrationTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client);
 
-        var invalidRequest = new {
+        var invalidRequest = new
+        {
             customerId = customerId,
             totalAmount = 99.99m,
             currencyCode = "INVALID",
@@ -196,7 +201,8 @@ public class OrdersControllerIntegrationTests
         // Arrange
         var customerId = await CreateCustomerAndGetId(_client);
 
-        var orderRequest = new {
+        var orderRequest = new
+        {
             customerId = customerId,
             totalAmount = 99.99m,
             currencyCode = "USD",
@@ -214,7 +220,8 @@ public class OrdersControllerIntegrationTests
         var order = JsonSerializer.Deserialize<JsonElement>(orderContent);
         var orderId = order.GetProperty("id").GetString();
 
-        var statusUpdateRequest = new {
+        var statusUpdateRequest = new
+        {
             status = "Fulfilled",
             reason = "Order fulfilled"
         };
@@ -224,7 +231,7 @@ public class OrdersControllerIntegrationTests
 
         // Assert
         Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
-        
+
         var content = await response.Content.ReadAsStringAsync();
         var updated = JsonSerializer.Deserialize<JsonElement>(content);
         Assert.That(updated.GetProperty("status").GetString(), Is.EqualTo("Fulfilled"));

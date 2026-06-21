@@ -25,7 +25,7 @@ builder.ConfigureServices((context, services) =>
     });
 
     // RabbitMQ Configuration
-    var rabbitMqSettings = context.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>() 
+    var rabbitMqSettings = context.Configuration.GetSection("RabbitMq").Get<RabbitMqSettings>()
         ?? new RabbitMqSettings();
     services.AddSingleton(rabbitMqSettings);
     services.AddSingleton<IRabbitMqConnectionFactory, RabbitMqConnectionFactory>();

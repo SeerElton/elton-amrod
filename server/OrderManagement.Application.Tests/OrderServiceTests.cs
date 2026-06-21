@@ -77,7 +77,7 @@ public class OrderServiceTests
         Assert.That(result.TotalAmount, Is.EqualTo(100.00m));
         Assert.That(result.CurrencyCode, Is.EqualTo("USD"));
         Assert.That(result.Status, Is.EqualTo("Pending"));
-        
+
         _mockOrderRepository.Verify(x => x.CreateAsync(It.IsAny<Order>()), Times.Once);
         _mockOutboxRepository.Verify(x => x.AddAsync(It.IsAny<OutboxMessage>()), Times.Once);
     }
@@ -173,22 +173,22 @@ public class OrderServiceTests
         // Arrange
         var orders = new List<Order>
         {
-            new() 
-            { 
-                Id = Guid.NewGuid(), 
-                CustomerId = Guid.NewGuid(), 
-                TotalAmount = 100.00m, 
-                CurrencyCode = "USD", 
+            new()
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                TotalAmount = 100.00m,
+                CurrencyCode = "USD",
                 Status = OrderStatus.Pending,
                 CreatedAt = DateTime.UtcNow,
                 LineItems = new List<OrderLineItem>()
             },
-            new() 
-            { 
-                Id = Guid.NewGuid(), 
-                CustomerId = Guid.NewGuid(), 
-                TotalAmount = 200.00m, 
-                CurrencyCode = "EUR", 
+            new()
+            {
+                Id = Guid.NewGuid(),
+                CustomerId = Guid.NewGuid(),
+                TotalAmount = 200.00m,
+                CurrencyCode = "EUR",
                 Status = OrderStatus.Fulfilled,
                 CreatedAt = DateTime.UtcNow,
                 LineItems = new List<OrderLineItem>()
