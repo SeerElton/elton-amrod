@@ -1,0 +1,8 @@
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.csproj.AssemblyReference.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.AssemblyInfoInputs.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.AssemblyInfo.cs
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.csproj.CoreCompileInputs.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.MvcApplicationPartsAssemblyInfo.cs
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.MvcApplicationPartsAssemblyInfo.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/Debug/net8.0/OrderManagement.Api.sourcelink.json

@@ -1,0 +1,12 @@
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/bin/Debug/net8.0/OrderManagement.Contracts.deps.json
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/bin/Debug/net8.0/OrderManagement.Contracts.dll
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/bin/Debug/net8.0/OrderManagement.Contracts.pdb
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.AssemblyInfoInputs.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.AssemblyInfo.cs
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.csproj.CoreCompileInputs.cache
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.sourcelink.json
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.dll
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/refint/OrderManagement.Contracts.dll
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/OrderManagement.Contracts.pdb
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/Debug/net8.0/ref/OrderManagement.Contracts.dll

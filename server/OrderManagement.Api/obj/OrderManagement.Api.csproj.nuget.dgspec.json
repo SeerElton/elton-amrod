@@ -1,0 +1,352 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/OrderManagement.Api.csproj": {}
+  },
+  "projects": {
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/OrderManagement.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/OrderManagement.Api.csproj",
+        "projectName": "OrderManagement.Api",
+        "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/OrderManagement.Api.csproj",
+        "packagesPath": "/Users/prophet/.nuget/packages/",
+        "outputPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Api/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prophet/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/OrderManagement.Application.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/OrderManagement.Application.csproj"
+              },
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj"
+              },
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj"
+              },
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.AspNetCore.OpenApi": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[10.0.0, )"
+            },
+            "Swashbuckle.AspNetCore": {
+              "target": "Package",
+              "version": "[10.2.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/OrderManagement.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/OrderManagement.Application.csproj",
+        "projectName": "OrderManagement.Application",
+        "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/OrderManagement.Application.csproj",
+        "packagesPath": "/Users/prophet/.nuget/packages/",
+        "outputPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prophet/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj"
+              },
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj"
+              },
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj",
+        "projectName": "OrderManagement.Contracts",
+        "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/OrderManagement.Contracts.csproj",
+        "packagesPath": "/Users/prophet/.nuget/packages/",
+        "outputPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Contracts/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prophet/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj",
+        "projectName": "OrderManagement.Domain",
+        "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj",
+        "packagesPath": "/Users/prophet/.nuget/packages/",
+        "outputPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prophet/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj",
+        "projectName": "OrderManagement.Infrastructure",
+        "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/OrderManagement.Infrastructure.csproj",
+        "packagesPath": "/Users/prophet/.nuget/packages/",
+        "outputPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/prophet/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj": {
+                "projectPath": "/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/OrderManagement.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.7, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[8.0.7, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.404/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

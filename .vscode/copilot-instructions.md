@@ -12,6 +12,7 @@ applyTo:
 # AMROD - Copilot Coding Standards
 
 **ALWAYS reference [README.md](../README.md) as the single source of truth for:**
+
 - Architecture diagrams (all 7 diagrams)
 - Design patterns and their implementation
 - Database design and entity definitions
@@ -26,6 +27,7 @@ This file contains coding standards and implementation guidelines.
 ## Quick Architecture Reference
 
 See [README.md](../README.md) for:
+
 - [High-Level System Architecture](../README.md#high-level-system-architecture)
 - [Solution Structure](../README.md#solution-structure)
 - [Why a Contracts Project Exists](../README.md#why-a-contracts-project-exists)
@@ -44,6 +46,7 @@ See [README.md](../README.md) for:
 Full details in [README.md - Solution Structure](../README.md#solution-structure):
 
 **Key Projects:**
+
 - `OrderManagement.Api` - Controllers, middleware, filters, swagger configuration
 - `OrderManagement.Application` - Services, validators, messaging, mapping
 - `OrderManagement.Domain` - Entities, enums, constants, business rules
@@ -59,6 +62,7 @@ Full details in [README.md - Solution Structure](../README.md#solution-structure
 Full details in [README.md - Controller-Service-Repository Pattern](../README.md#controller-service-repository-pattern)
 
 **Controller:**
+
 - Request handling
 - Response handling
 - Swagger documentation
@@ -68,6 +72,7 @@ Full details in [README.md - Controller-Service-Repository Pattern](../README.md
 - ❌ NO database access
 
 **Service:**
+
 - Business rules
 - Validation
 - State transitions
@@ -77,6 +82,7 @@ Full details in [README.md - Controller-Service-Repository Pattern](../README.md
 - ❌ NO SQL queries
 
 **Repository:**
+
 - Database access
 - Query execution
 - Persistence
@@ -120,7 +126,7 @@ public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest reque
     catch (Exception ex)
     {
         _logger.LogError(ex, "OrdersController->CreateOrder failed");
-        return StatusCode(StatusCodes.Status500InternalServerError, 
+        return StatusCode(StatusCodes.Status500InternalServerError,
             new ApiErrorResponse("An unexpected error occurred"));
     }
 }
@@ -150,7 +156,7 @@ public class CreateOrderRequest
     [Required]
     [ApiProperty(Description = "...")]
     public string CustomerId { get; set; }
-    
+
     [Required]
     [ApiProperty(Description = "...")]
     public decimal Amount { get; set; }
@@ -202,6 +208,7 @@ Never swallow exceptions - always log and propagate or handle appropriately.
 Use EF Core Code First.
 
 **Core Entities** (see [README.md - Database Design](../README.md#database-design)):
+
 - `Customer` - Id, Name, Email, CountryCode, CreatedAt
 - `Order` - Id, CustomerId, Status, CurrencyCode, TotalAmount, CreatedAt, RowVersion
 - `OrderLineItem` - Id, OrderId, ProductSku, Quantity, UnitPrice
@@ -271,8 +278,8 @@ private void ValidateStatusTransition(Order order, OrderStatus newStatus)
         { OrderStatus.Pending, new[] { OrderStatus.Paid, OrderStatus.Cancelled } },
         { OrderStatus.Paid, new[] { OrderStatus.Fulfilled, OrderStatus.Cancelled } }
     };
-    
-    if (!allowedTransitions.ContainsKey(order.Status) || 
+
+    if (!allowedTransitions.ContainsKey(order.Status) ||
         !allowedTransitions[order.Status].Contains(newStatus))
     {
         throw new InvalidOperationException($"Cannot transition from {order.Status} to {newStatus}");
@@ -330,11 +337,11 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
         RuleFor(x => x.CustomerId)
             .NotEmpty()
             .WithMessage("Customer ID is required");
-        
+
         RuleFor(x => x.Amount)
             .GreaterThan(0)
             .WithMessage("Amount must be greater than zero");
-        
+
         RuleFor(x => x.CountryCode)
             .Must(IsValidCountryCode)
             .WithMessage("Invalid country code");
@@ -349,6 +356,7 @@ public class CreateOrderRequestValidator : AbstractValidator<CreateOrderRequest>
 See [README.md - SADC Regional Validation](../README.md#sadc-regional-validation).
 
 Validate:
+
 - ISO 3166-1 Alpha-2 country codes
 - ISO 4217 currency codes
 - Common Monetary Area (CMA) relationships
@@ -383,6 +391,7 @@ See [README.md - Testing Strategy](../README.md#testing-strategy).
 See [README.md - Docker Environment](../README.md#docker-environment).
 
 Services:
+
 - SQL Server
 - RabbitMQ
 - API
