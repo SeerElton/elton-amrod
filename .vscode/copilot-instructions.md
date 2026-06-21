@@ -1,5 +1,5 @@
 ---
-description: Senior Developer Technical Assessment - AMROD Order Management System
+description: OrderFlow Order Management System - Copilot Coding Standards
 referenceDocs:
   - ../README.md
   - ../architecture/
@@ -9,7 +9,7 @@ applyTo:
   - "**/*.ts"
 ---
 
-# AMROD - Copilot Coding Standards
+# OrderFlow - Copilot Coding Standards
 
 **ALWAYS reference [README.md](../README.md) as the single source of truth for:**
 
@@ -403,6 +403,42 @@ Services:
 ```bash
 docker-compose up -d
 ```
+
+---
+
+## GraphQL Endpoint
+
+See [README.md - API Endpoints - GraphQL](../README.md#graphql-endpoint) for query examples and benefits.
+
+**Location:** `/OrderManagement.Api/GraphQL/`
+
+**Files:**
+
+- `Query.cs` - Resolvers for root queries
+- `Types.cs` - GraphQL type definitions (OrderType, CustomerType, OrderLineItemType)
+- `schema.graphql` - Schema documentation with examples
+
+**Query Capabilities:**
+
+- Get orders with filtering by customerId and status
+- Get order details with line items and associated customer
+- Get customers with related orders
+- Single queries for nested data (no N+1 without DataLoaders)
+
+**When to use GraphQL vs REST:**
+
+| REST                              | GraphQL                      |
+|---|---|
+| Simple CRUD operations            | Complex multi-resource queries |
+| Mobile clients with limited bandwidth | Dashboard/reporting queries  |
+| Strongly typed external API       | Internal flexible API        |
+
+**GraphQL provides:**
+
+- Single request for nested data (orders + customers + line items)
+- Client control over which fields to fetch
+- Reduced network traffic for constrained clients
+- N+1 query prevention strategy
 
 ---
 

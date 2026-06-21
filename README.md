@@ -5,6 +5,16 @@ A production-ready Order Management System demonstrating clean architecture, eve
 **Key Documentation**:
 
 - [DEPLOYMENT.md](DEPLOYMENT.md) - Docker Compose and Kubernetes/Helm deployment guide
+- [ANSWERS.md](ANSWERS.md) - Technical assessment answers and advanced topics
+
+**Key Features**:
+
+- ✅ REST API with Swagger/OpenAPI documentation
+- ✅ **GraphQL endpoint** for flexible querying (`/graphql`)
+- ✅ **CI/CD Pipeline** - GitHub Actions with automated build, test, and Docker validation
+- ✅ RabbitMQ event-driven messaging with Outbox pattern
+- ✅ React + TypeScript frontend
+- ✅ Comprehensive testing (unit, integration, E2E)
 
 ---
 
@@ -482,6 +492,86 @@ All API contracts originate from Swagger.
 
 ---
 
+# API Endpoints
+
+## REST API (Swagger/OpenAPI)
+
+When running locally with Docker Compose, access the API documentation:
+
+- **Swagger UI**: http://localhost:5063/swagger
+- **OpenAPI JSON**: http://localhost:5063/swagger/v1/swagger.json
+
+### Main Endpoints
+
+| Method | Endpoint                      | Purpose                    |
+|--------|-------------------------------|----------------------------|
+| POST   | `/api/v1/customers`           | Create customer            |
+| GET    | `/api/v1/customers`           | Search customers (paginated) |
+| GET    | `/api/v1/customers/{id}`      | Get customer details       |
+| POST   | `/api/v1/orders`              | Create order with line items |
+| GET    | `/api/v1/orders`              | List orders (paginated, filterable) |
+| GET    | `/api/v1/orders/{id}`         | Get order details          |
+| GET    | `/api/v1/orders/customer/{customerId}` | Get customer's orders |
+| PUT    | `/api/v1/orders/{id}/status`  | Update order status (idempotent) |
+
+All endpoints support:
+- **Pagination**: `pageSize`, `page` parameters (max pageSize: 100)
+- **Filtering**: Status, customer ID, date ranges
+- **Sorting**: By date, amount, status
+- **Idempotency**: `Idempotency-Key` header for safe retries
+
+## GraphQL Endpoint
+
+Read-only GraphQL API for flexible querying:
+
+- **GraphQL Playground**: http://localhost:5063/graphql (when configured)
+- **Schema**: [GraphQL Schema Documentation](server/OrderManagement.Api/GraphQL/schema.graphql)
+
+### Benefits Over REST
+
+| REST                     | GraphQL                        |
+|--------------------------|--------------------------------|
+| Multiple requests needed | Single request for nested data |
+| Over-fetching data       | Request only needed fields     |
+| N+1 query problem        | Resolved with DataLoaders      |
+| Single client assumption | Multi-client support           |
+
+### GraphQL Query Examples
+
+```graphql
+query GetOrdersWithLineItems {
+  orders(customerId: "12345678-1234-1234-1234-123456789012") {
+    id
+    totalAmount
+    status
+    lineItems {
+      productSku
+      quantity
+      lineTotal
+    }
+    customer {
+      name
+      email
+    }
+  }
+}
+
+query GetCustomerWithOrders {
+  customer(id: "12345678-1234-1234-1234-123456789012") {
+    id
+    name
+    email
+    orders {
+      id
+      totalAmount
+      status
+    }
+  }
+}
+```
+
+---
+
 # Database Design
 
 ## Core Entities
@@ -814,6 +904,58 @@ For detailed deployment instructions including Docker Compose and Kubernetes wit
 - Outbox Pattern is implemented to ensure message reliability.
 - React UI prioritizes functionality and type safety over styling.
 - Architecture favors maintainability and testability over premature optimization.
+
+---
+
+# CI/CD Pipeline
+
+Automated build, test, and deployment using GitHub Actions:
+
+**File**: [.github/workflows/ci.yml](.github/workflows/ci.yml)
+
+## Pipeline Stages
+
+1. **Build & Test** (build-test job)
+   - Restore .NET dependencies
+   - Build backend solution
+   - Run backend unit and integration tests
+   - Install npm dependencies
+   - Build React frontend
+   - Run frontend tests
+   - Code formatting validation
+
+2. **Docker Validation** (docker-build job)
+   - Build Docker Compose stack
+   - Validate service health:
+     - API health check: `http://localhost:5063/swagger`
+     - Client health check: `http://localhost:3000`
+   - Services integration test
+
+3. **Notifications** (notify job)
+   - Aggregate build status
+   - Report pass/fail results
+
+## Service Dependencies
+
+The pipeline includes service dependencies for integration testing:
+
+- **SQL Server 2022** - Port 1433
+- **RabbitMQ 3.13** - Port 5672
+
+## Artifacts
+
+Successfully built artifacts are uploaded for deployment:
+
+- Backend NuGet packages
+- Frontend build dist/
+- Docker images
+
+Run locally:
+
+```bash
+docker-compose up -d
+# Run tests: npm test (frontend) / dotnet test (backend)
+```
 
 ---
 
