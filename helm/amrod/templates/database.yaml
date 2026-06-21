@@ -1,0 +1,100 @@
+{{- if .Values.sqlserver.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amrod.fullname" . }}-sqlserver
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "amrod.database.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "amrod.database.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: sqlserver
+          image: "{{ .Values.sqlserver.image.repository }}:{{ .Values.sqlserver.image.tag }}"
+          imagePullPolicy: {{ .Values.sqlserver.image.pullPolicy }}
+          ports:
+            - name: sql
+              containerPort: {{ .Values.sqlserver.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: ACCEPT_EULA
+              value: "{{ .Values.sqlserver.env.ACCEPT_EULA }}"
+            - name: SA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "amrod.fullname" . }}-sqlserver-secret
+                  key: sa-password
+            - name: MSSQL_PID
+              value: "{{ .Values.sqlserver.env.MSSQL_PID }}"
+          livenessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q "SELECT 1"
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /bin/bash
+                - -c
+                - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q "SELECT 1"
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          resources:
+            {{- toYaml .Values.sqlserver.resources | nindent 12 }}
+          volumeMounts:
+            - name: sqlserver-data
+              mountPath: /var/opt/mssql
+      volumes:
+        - name: sqlserver-data
+          persistentVolumeClaim:
+            claimName: {{ include "amrod.fullname" . }}-sqlserver-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amrod.fullname" . }}-sqlserver
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  type: {{ .Values.sqlserver.service.type }}
+  ports:
+    - port: {{ .Values.sqlserver.service.port }}
+      targetPort: sql
+      protocol: TCP
+      name: sql
+  selector:
+    {{- include "amrod.database.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.sqlserver.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "amrod.fullname" . }}-sqlserver-pvc
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: database
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.sqlserver.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.sqlserver.persistence.size }}
+{{- end }}
+{{- end }}

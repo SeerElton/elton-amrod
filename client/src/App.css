@@ -1,0 +1,11 @@
+.main-container {
+  min-height: calc(100vh - 80px);
+  padding: 2rem;
+  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+}
+
+@media (max-width: 768px) {
+  .main-container {
+    padding: 1rem;
+  }
+}

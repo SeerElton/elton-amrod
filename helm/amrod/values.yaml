@@ -1,0 +1,198 @@
+# Default values for orderflow Helm chart
+
+# Global settings
+global:
+  environment: production
+  domain: orderflow.local
+  imagePullSecrets: []
+
+# API (Server) Configuration
+api:
+  replicaCount: 2
+
+  image:
+    repository: orderflow-api
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 5063
+    targetPort: 5063
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: api.orderflow.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: api-tls
+        hosts:
+          - api.orderflow.local
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 80
+
+  env:
+    - name: ASPNETCORE_ENVIRONMENT
+      value: "Production"
+    - name: ASPNETCORE_URLS
+      value: "http://+:5063"
+
+  envFrom: []
+  # - configMapRef:
+  #     name: api-config
+
+# Client (UI) Configuration
+client:
+  replicaCount: 2
+
+  image:
+    repository: orderflow-client
+    tag: latest
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+    hosts:
+      - host: orderflow.local
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: client-tls
+        hosts:
+          - orderflow.local
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 3
+    targetCPUUtilizationPercentage: 80
+
+  env:
+    - name: VITE_API_URL
+      value: "http://api.orderflow.local"
+
+# SQL Server Configuration
+sqlserver:
+  enabled: true
+
+  image:
+    repository: mcr.microsoft.com/mssql/server
+    tag: "2022-latest"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 1433
+    targetPort: 1433
+
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+    requests:
+      cpu: 500m
+      memory: 1Gi
+
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    size: 10Gi
+
+  env:
+    ACCEPT_EULA: "Y"
+    SA_PASSWORD: "YourStrong@Passw0rd"
+    MSSQL_PID: "Developer"
+
+# RabbitMQ Configuration
+rabbitmq:
+  enabled: true
+
+  image:
+    repository: rabbitmq
+    tag: "3.13-management"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    amqpPort: 5672
+    managementPort: 15672
+
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: rabbitmq.orderflow.local
+        paths:
+          - path: /
+            pathType: Prefix
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+
+  persistence:
+    enabled: true
+    storageClass: "standard"
+    size: 5Gi
+
+  env:
+    RABBITMQ_DEFAULT_USER: guest
+    RABBITMQ_DEFAULT_PASS: guest
+
+# Common labels
+labels:
+  app: orderflow
+  version: "1.0"
+  managed-by: helm
+
+# Security Context
+securityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+
+# Node affinity (optional)
+affinity: {}
+
+# Pod Disruption Budget
+podDisruptionBudget:
+  enabled: false
+  minAvailable: 1

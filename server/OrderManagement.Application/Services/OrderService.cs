@@ -1,4 +1,5 @@
 using System.Text.Json;
+using OrderManagement.Contracts.Events;
 using OrderManagement.Contracts.Requests;
 using OrderManagement.Contracts.Responses;
 using OrderManagement.Domain.Entities;
@@ -10,6 +11,7 @@ namespace OrderManagement.Application.Services;
 public interface IOrderService
 {
     Task<OrderResponse> CreateOrderAsync(CreateOrderRequest request);
+    Task<IEnumerable<OrderResponse>> GetAllOrdersAsync();
     Task<OrderResponse> GetOrderAsync(Guid orderId);
     Task<IEnumerable<OrderResponse>> GetCustomerOrdersAsync(Guid customerId);
     Task<OrderResponse> UpdateOrderStatusAsync(Guid orderId, UpdateOrderStatusRequest request);
@@ -49,12 +51,22 @@ public class OrderService : IOrderService
 
         var createdOrder = await _orderRepository.CreateAsync(order);
 
-        // Create outbox event
+        // Create outbox event with full event DTO
+        var orderCreatedEvent = new OrderCreatedEvent
+        {
+            OrderId = createdOrder.Id,
+            CustomerId = createdOrder.CustomerId,
+            TotalAmount = createdOrder.TotalAmount,
+            CurrencyCode = createdOrder.CurrencyCode,
+            LineItemCount = createdOrder.LineItems.Count,
+            CreatedAt = createdOrder.CreatedAt
+        };
+
         var outboxMessage = new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            EventType = "OrderCreated",
-            Payload = JsonSerializer.Serialize(new { OrderId = createdOrder.Id, CustomerId = createdOrder.CustomerId }),
+            EventType = nameof(OrderCreatedEvent),
+            Payload = JsonSerializer.Serialize(orderCreatedEvent),
             Processed = false,
             CreatedAt = DateTime.UtcNow
         };
@@ -62,6 +74,12 @@ public class OrderService : IOrderService
         await _outboxRepository.AddAsync(outboxMessage);
 
         return MapToResponse(createdOrder);
+    }
+
+    public async Task<IEnumerable<OrderResponse>> GetAllOrdersAsync()
+    {
+        var orders = await _orderRepository.GetAllAsync();
+        return orders.Select(MapToResponse);
     }
 
     public async Task<OrderResponse> GetOrderAsync(Guid orderId)
@@ -87,17 +105,28 @@ public class OrderService : IOrderService
         if (!Enum.TryParse<OrderStatus>(request.Status, out var newStatus))
             throw new ArgumentException($"Invalid status: {request.Status}");
 
+        var previousStatus = order.Status;
         ValidateStatusTransition(order.Status, newStatus);
 
         order.Status = newStatus;
         await _orderRepository.UpdateAsync(order);
 
-        // Create outbox event
+        // Create outbox event with full event DTO
+        var orderStatusChangedEvent = new OrderStatusChangedEvent
+        {
+            OrderId = order.Id,
+            CustomerId = order.CustomerId,
+            PreviousStatus = previousStatus.ToString(),
+            NewStatus = newStatus.ToString(),
+            Reason = request.Reason,
+            ChangedAt = DateTime.UtcNow
+        };
+
         var outboxMessage = new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            EventType = "OrderStatusUpdated",
-            Payload = JsonSerializer.Serialize(new { OrderId = order.Id, Status = newStatus.ToString() }),
+            EventType = nameof(OrderStatusChangedEvent),
+            Payload = JsonSerializer.Serialize(orderStatusChangedEvent),
             Processed = false,
             CreatedAt = DateTime.UtcNow
         };
@@ -139,6 +168,7 @@ public class OrderService : IOrderService
         {
             Id = order.Id,
             CustomerId = order.CustomerId,
+            CustomerName = order.Customer?.Name ?? "Unknown",
             Status = order.Status.ToString(),
             CurrencyCode = order.CurrencyCode,
             TotalAmount = order.TotalAmount,

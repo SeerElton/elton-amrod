@@ -1,6 +1,9 @@
-# AMROD - Senior Developer Technical Assessment
+# OrderFlow - Order Management System
 
-A production-ready Order Management System demonstrating clean architecture, event-driven design, messaging reliability, API-first development, and senior-level engineering practices.
+A production-ready Order Management System demonstrating clean architecture, event-driven design, messaging reliability, API-first development, and scalable engineering practices.
+
+**Key Documentation**:
+- [DEPLOYMENT.md](DEPLOYMENT.md) - Docker Compose and Kubernetes/Helm deployment guide
 
 ---
 
@@ -769,6 +772,8 @@ Start everything:
 ```bash
 docker-compose up -d
 ```
+
+For detailed deployment instructions including Docker Compose and Kubernetes with Helm, see [DEPLOYMENT.md](DEPLOYMENT.md).
 
 ---
 

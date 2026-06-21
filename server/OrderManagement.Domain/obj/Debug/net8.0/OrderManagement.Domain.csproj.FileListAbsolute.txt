@@ -1,8 +1,8 @@
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.AssemblyInfoInputs.cache
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/bin/Debug/net8.0/OrderManagement.Domain.deps.json
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/bin/Debug/net8.0/OrderManagement.Domain.dll
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/bin/Debug/net8.0/OrderManagement.Domain.pdb
-/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.GeneratedMSBuildEditorConfig.editorconfig
-/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.AssemblyInfoInputs.cache
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.AssemblyInfo.cs
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.csproj.CoreCompileInputs.cache
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.Domain/obj/Debug/net8.0/OrderManagement.Domain.sourcelink.json

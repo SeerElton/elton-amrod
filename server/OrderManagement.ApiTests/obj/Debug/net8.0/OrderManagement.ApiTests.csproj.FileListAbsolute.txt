@@ -97,3 +97,4 @@
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.ApiTests/obj/Debug/net8.0/OrderManagement.ApiTests.pdb
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.ApiTests/obj/Debug/net8.0/OrderManagement.ApiTests.genruntimeconfig.cache
 /Users/prophet/Documents/GitHub/amrod/server/OrderManagement.ApiTests/obj/Debug/net8.0/ref/OrderManagement.ApiTests.dll
+/Users/prophet/Documents/GitHub/amrod/server/OrderManagement.ApiTests/bin/Debug/net8.0/CoverletSourceRootsMapping_OrderManagement.ApiTests

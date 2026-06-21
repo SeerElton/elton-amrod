@@ -1,0 +1,89 @@
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Build outputs
+bin/
+obj/
+dist/
+build/
+*.dll
+*.exe
+*.pdb
+*.so
+*.dylib
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+.nuget/
+
+# Node/npm
+node_modules/
+npm-debug.log
+yarn-error.log
+.npm
+dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+appsettings.Development.json
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.mdf
+*.ldf
+
+# Generated code
+src/api/generated/
+
+# Testing
+coverage/
+.nyc_output/
+*.lcov
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# OS
+Thumbs.db
+.DS_Store
+
+# IDE-specific
+.vscode/launch.json
+.vscode/settings.json
+.vscode/extensions.json
+*.code-workspace
+
+# User-specific
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ReSharper
+.idea/
+*.sln.iml
+_ReSharper*/
+*.[Rr]esharper
+*.DotSettings.user
+
+# Visual Studio cache/options
+.vs/

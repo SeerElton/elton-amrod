@@ -1,0 +1,110 @@
+.card-light {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-outline-danger {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.btn-outline-danger:hover {
+  background-color: #fee2e2;
+  border-color: #ef4444;
+}
+
+/* Form sections */
+.form-section {
+  background-color: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-section h5 {
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+/* Line items styling */
+.line-items-container {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.line-items-table {
+  margin-top: 1rem;
+}
+
+.line-items-table thead th {
+  background-color: white;
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  color: #374151;
+  padding: 0.75rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+}
+
+.line-items-table tbody td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.line-items-input-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-end;
+  background-color: white;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.line-items-input-row .col-md-5,
+.line-items-input-row .col-md-3,
+.line-items-input-row .col-md-1 {
+  flex: none;
+}
+
+/* Customer dropdown styling */
+.customer-dropdown {
+  position: relative;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.customer-dropdown-item {
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.customer-dropdown-item:hover {
+  background-color: #f3f4f6;
+}
+
+.customer-dropdown-item.selected {
+  background-color: #ede9fe;
+  color: #6366f1;
+}
+
+/* Alert improvements */
+.alert-success {
+  background-color: #d1fae5;
+  border-left: 4px solid #10b981;
+  border-radius: 0.5rem;
+}

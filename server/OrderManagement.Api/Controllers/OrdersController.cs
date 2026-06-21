@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using OrderManagement.Application.Services;
 using OrderManagement.Contracts.Requests;
 using OrderManagement.Contracts.Responses;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace OrderManagement.Api.Controllers;
 
@@ -19,6 +20,7 @@ public class OrdersController : ControllerBase
     }
 
     [HttpPost]
+    [SwaggerOperation(Summary = "Create a new order", Description = "Creates an order for an existing customer with optional line items")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -43,7 +45,27 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpGet("{id}")]
+    [HttpGet]
+    [SwaggerOperation(Summary = "Get all orders", Description = "Returns all orders in the system")]
+    [ProducesResponseType(typeof(IEnumerable<OrderResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetAllOrders()
+    {
+        try
+        {
+            var result = await _orderService.GetAllOrdersAsync();
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "OrdersController->GetAllOrders failed");
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new ApiErrorResponse("An unexpected error occurred"));
+        }
+    }
+
+    [HttpGet("{id:guid}")]
+    [SwaggerOperation(Summary = "Get an order by ID", Description = "Returns a single order with its line items")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
@@ -67,7 +89,8 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpGet("customer/{customerId}")]
+    [HttpGet("customer/{customerId:guid}")]
+    [SwaggerOperation(Summary = "Get orders for a customer", Description = "Returns all orders belonging to a specific customer")]
     [ProducesResponseType(typeof(IEnumerable<OrderResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> GetCustomerOrders(Guid customerId)
@@ -85,7 +108,8 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPut("{id}/status")]
+    [HttpPut("{id:guid}/status")]
+    [SwaggerOperation(Summary = "Update order status", Description = "Transitions an order to a new status. Valid transitions: Pending→Paid, Pending→Cancelled, Paid→Fulfilled, Paid→Cancelled")]
     [ProducesResponseType(typeof(OrderResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiErrorResponse), StatusCodes.Status404NotFound)]

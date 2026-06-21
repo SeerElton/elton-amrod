@@ -1,0 +1,135 @@
+{{- if .Values.rabbitmq.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "amrod.fullname" . }}-rabbitmq
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "amrod.rabbitmq.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "amrod.rabbitmq.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: rabbitmq
+          image: "{{ .Values.rabbitmq.image.repository }}:{{ .Values.rabbitmq.image.tag }}"
+          imagePullPolicy: {{ .Values.rabbitmq.image.pullPolicy }}
+          ports:
+            - name: amqp
+              containerPort: {{ .Values.rabbitmq.service.amqpPort }}
+              protocol: TCP
+            - name: management
+              containerPort: {{ .Values.rabbitmq.service.managementPort }}
+              protocol: TCP
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "amrod.fullname" . }}-rabbitmq-secret
+                  key: username
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "amrod.fullname" . }}-rabbitmq-secret
+                  key: password
+          livenessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - ping
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - rabbitmq-diagnostics
+                - ping
+            initialDelaySeconds: 15
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 2
+          resources:
+            {{- toYaml .Values.rabbitmq.resources | nindent 12 }}
+          volumeMounts:
+            - name: rabbitmq-data
+              mountPath: /var/lib/rabbitmq
+      volumes:
+        - name: rabbitmq-data
+          persistentVolumeClaim:
+            claimName: {{ include "amrod.fullname" . }}-rabbitmq-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "amrod.fullname" . }}-rabbitmq
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  type: {{ .Values.rabbitmq.service.type }}
+  ports:
+    - port: {{ .Values.rabbitmq.service.amqpPort }}
+      targetPort: amqp
+      protocol: TCP
+      name: amqp
+    - port: {{ .Values.rabbitmq.service.managementPort }}
+      targetPort: management
+      protocol: TCP
+      name: management
+  selector:
+    {{- include "amrod.rabbitmq.selectorLabels" . | nindent 4 }}
+---
+{{- if .Values.rabbitmq.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "amrod.fullname" . }}-rabbitmq
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  {{- if .Values.rabbitmq.ingress.className }}
+  ingressClassName: {{ .Values.rabbitmq.ingress.className }}
+  {{- end }}
+  rules:
+    {{- range .Values.rabbitmq.ingress.hosts }}
+    - host: {{ .host | quote }}
+      http:
+        paths:
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
+            backend:
+              service:
+                name: {{ include "amrod.fullname" $ }}-rabbitmq
+                port:
+                  number: {{ $.Values.rabbitmq.service.managementPort }}
+          {{- end }}
+    {{- end }}
+{{- end }}
+---
+{{- if .Values.rabbitmq.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "amrod.fullname" . }}-rabbitmq-pvc
+  labels:
+    {{- include "amrod.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.rabbitmq.persistence.storageClass }}
+  resources:
+    requests:
+      storage: {{ .Values.rabbitmq.persistence.size }}
+{{- end }}
+{{- end }}

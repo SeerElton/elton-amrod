@@ -1,0 +1,14 @@
+apiVersion: v2
+name: orderflow
+description: A Helm chart for OrderFlow Order Management System
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - order-management
+  - microservices
+  - .net
+  - react
+maintainers:
+  - name: OrderFlow Team
+    email: dev@orderflow.local

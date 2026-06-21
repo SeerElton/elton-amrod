@@ -1,0 +1,87 @@
+.table-hover tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.font-monospace {
+  font-family: 'Courier New', monospace;
+}
+
+/* Orders table styling */
+.orders-table {
+  background-color: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.orders-table .table {
+  margin: 0;
+}
+
+.orders-table thead {
+  background-color: #f9fafb;
+}
+
+.orders-table thead th {
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+  padding: 1rem 0.75rem;
+  border: none;
+}
+
+.orders-table tbody td {
+  padding: 1.25rem 0.75rem;
+  vertical-align: middle;
+  border: none;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.orders-table tbody tr {
+  transition: all 0.3s ease;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #f9fafb;
+}
+
+.orders-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Order ID styling */
+.order-id {
+  font-weight: 600;
+  color: #6366f1;
+}
+
+/* Customer name styling */
+.customer-name {
+  font-weight: 500;
+  color: #374151;
+}
+
+/* Amount styling */
+.amount {
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* Actions button styling */
+.btn-view {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.btn-view:hover {
+  background-color: #6366f1;
+  color: white;
+  border-color: #6366f1;
+}
