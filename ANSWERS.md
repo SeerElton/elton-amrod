@@ -83,6 +83,7 @@ Infrastructure Layer (Repositories, Database, Messaging)
 #### Multi-Tier Scaling Strategy
 
 ##### **Database Tier**
+
 - **Sharding by CustomerId**: Distribute orders across multiple SQL Server instances
 - **Table Partitioning**: Partition `Orders` table by date range (e.g., monthly)
 - **Read Replicas**: AlwaysOn Availability Groups for read-heavy queries
@@ -91,7 +92,7 @@ Infrastructure Layer (Repositories, Database, Messaging)
 ```sql
 -- Partition function for date-based sharding
 CREATE PARTITION FUNCTION pf_OrderDate (DATETIME2)
-AS RANGE RIGHT FOR VALUES 
+AS RANGE RIGHT FOR VALUES
 ('2026-01-01', '2026-02-01', '2026-03-01', ...);
 
 CREATE PARTITION SCHEME ps_OrderDate
@@ -108,6 +109,7 @@ CREATE TABLE Orders (
 ```
 
 ##### **API Tier**
+
 - **Horizontal Scaling**: Deploy multiple API instances behind load balancer
 - **Read-Write Separation**: Route POST /orders to dedicated instances with more resources
 - **Response Caching**: Cache GET endpoints with ETags (e.g., customer list, order details)
@@ -119,6 +121,7 @@ CREATE TABLE Orders (
 ```
 
 ##### **Message Queue Tier**
+
 - **RabbitMQ Clustering**: Multi-node RabbitMQ cluster for high availability
 - **Multiple Consumers**: Deploy 10+ worker instances consuming OrderCreated events
 - **Prefetch Limit**: Set `prefetch_count=10` to balance load across consumers
@@ -133,6 +136,7 @@ channel.BasicPublish(exchange: "", routingKey: queueName, properties);
 ```
 
 ##### **Caching Tier**
+
 - **Redis Cache**: Cache frequently accessed data (customers, exchange rates)
 - **Time-based Expiration**: 5-minute TTL for customer data, 1-hour for exchange rates
 - **Cache Invalidation**: Publish cache eviction events on order creation
@@ -140,26 +144,27 @@ channel.BasicPublish(exchange: "", routingKey: queueName, properties);
 ```csharp
 // Cache customer with 5-minute expiration
 await _cacheService.SetAsync(
-    $"customer:{customerId}", 
-    customer, 
+    $"customer:{customerId}",
+    customer,
     TimeSpan.FromMinutes(5)
 );
 ```
 
 ##### **Load Balancer Configuration**
+
 - **Round-robin** distribution across API instances
 - **Health checks** every 5 seconds
 - **Connection draining** (60-second drain timeout) on instance termination
 
 #### Expected Throughput Improvements
 
-| Component | Baseline | With Optimization | Notes |
-|-----------|----------|------------------|-------|
-| API Instances | 1 @ 200 req/s | 5 @ 200 req/s = 1000 req/s | Horizontal scaling |
-| Database | 1 server | 3 shards (3x capacity) | Database partitioning |
-| Workers | 2 | 20 | RabbitMQ consumer scaling |
-| Cache Hit Rate | 0% | 70% | Redis caching |
-| **Total Throughput** | ~200 req/s | **1000+ req/s** | 5x improvement |
+| Component            | Baseline      | With Optimization          | Notes                     |
+| -------------------- | ------------- | -------------------------- | ------------------------- |
+| API Instances        | 1 @ 200 req/s | 5 @ 200 req/s = 1000 req/s | Horizontal scaling        |
+| Database             | 1 server      | 3 shards (3x capacity)     | Database partitioning     |
+| Workers              | 2             | 20                         | RabbitMQ consumer scaling |
+| Cache Hit Rate       | 0%            | 70%                        | Redis caching             |
+| **Total Throughput** | ~200 req/s    | **1000+ req/s**            | 5x improvement            |
 
 #### Monitoring & Alerting
 
@@ -184,12 +189,13 @@ The system implements the **Outbox Pattern** for reliable event publishing:
 ##### **How It Works**
 
 1. **Write Order + Event Atomically**:
+
    ```csharp
    using (var transaction = _dbContext.Database.BeginTransaction())
    {
        // Write order to database
        _dbContext.Orders.Add(order);
-       
+
        // Write event to outbox in same transaction
        var outboxMessage = new OutboxMessage
        {
@@ -200,26 +206,27 @@ The system implements the **Outbox Pattern** for reliable event publishing:
            CreatedAt = DateTime.UtcNow
        };
        _dbContext.OutboxMessages.Add(outboxMessage);
-       
+
        await _dbContext.SaveChangesAsync();
        transaction.Commit();
    }
    ```
 
 2. **Separate Worker Publishes**:
+
    ```csharp
    // OutboxPublisher Worker runs every 5 seconds
    var unprocessedMessages = await _dbContext.OutboxMessages
        .Where(m => !m.Processed)
        .ToListAsync();
-   
+
    foreach (var message in unprocessedMessages)
    {
        try
        {
            // Publish to RabbitMQ
            await _publisherService.PublishAsync(message);
-           
+
            // Mark as processed
            message.Processed = true;
            await _dbContext.SaveChangesAsync();
@@ -242,6 +249,7 @@ The system implements the **Outbox Pattern** for reliable event publishing:
 #### Additional Reliability Measures
 
 **1. Consumer-Side Idempotency**:
+
 ```csharp
 // Store processed message IDs to prevent reprocessing
 var isProcessed = await _redis.ExistsAsync($"processed:{message.Id}");
@@ -255,6 +263,7 @@ await _redis.SetAsync($"processed:{message.Id}", "1", TimeSpan.FromHours(24));
 ```
 
 **2. Retry Strategy**:
+
 ```csharp
 // Exponential backoff with max retries
 [Retry(MaxRetries = 3, BackoffMultiplier = 2.0)]
@@ -268,6 +277,7 @@ public async Task ConsumeOrderCreatedAsync(OrderCreatedEvent @event)
 ```
 
 **3. Dead Letter Queue**:
+
 ```csharp
 // Messages that fail after all retries go to DLQ
 channel.QueueDeclare(queue: "order-created-dlq", durable: true);
@@ -298,6 +308,7 @@ GET /api/v2/orders  (if changes needed in future)
 #### Implementation Approach
 
 **Routing Configuration**:
+
 ```csharp
 // Startup.cs
 endpoints.MapControllers()
@@ -330,12 +341,13 @@ public class OrdersController : ControllerBase
    - Deprecating (but keeping) old fields
 
 3. **Deprecation Policy**:
+
    ```csharp
    // Mark API for deprecation
    [Obsolete("Use /api/v2/orders instead", error: false)]
    [ApiVersion("1.0", Deprecated = true)]
    public async Task<ActionResult<OrderResponse>> GetOrder_v1(Guid id) { }
-   
+
    // New version
    [ApiVersion("2.0")]
    public async Task<ActionResult<OrderResponseV2>> GetOrder_v2(Guid id) { }
@@ -389,6 +401,7 @@ public class OrdersController : ControllerBase
 #### Implementation
 
 **1. Azure Entra Configuration**:
+
 ```csharp
 // Program.cs
 builder.Services
@@ -403,13 +416,14 @@ builder.Services.AddAuthorization(config =>
 {
     config.AddPolicy("OrderRead", policy =>
         policy.RequireClaim("scp", "api://orderflow/Orders.Read"));
-    
+
     config.AddPolicy("OrderWrite", policy =>
         policy.RequireClaim("scp", "api://orderflow/Orders.Write"));
 });
 ```
 
 **2. JWT Token Claims**:
+
 ```json
 {
   "iss": "https://login.microsoftonline.com/{tenant-id}/v2.0",
@@ -424,6 +438,7 @@ builder.Services.AddAuthorization(config =>
 ```
 
 **3. API Authorization**:
+
 ```csharp
 [Authorize(Policy = "OrderWrite")]
 [HttpPost("api/v1/orders")]
@@ -431,26 +446,26 @@ public async Task<ActionResult<OrderResponse>> CreateOrder(CreateOrderRequest re
 {
     var userId = User.FindFirst("oid")?.Value;
     var userName = User.FindFirst("preferred_username")?.Value;
-    
+
     // Log action with identity for audit trail
     _logger.LogInformation("User {user} created order", userName);
-    
+
     return await _orderService.CreateOrderAsync(request);
 }
 ```
 
 #### Security Best Practices
 
-| Concern | Implementation |
-|---------|----------------|
-| **Token Validation** | JWT signature verified against Azure's public keys |
-| **Token Refresh** | Tokens expire in 1 hour; use refresh tokens for new ones |
-| **Scope-Based Access** | API validates `scp` claim against required scopes |
-| **HTTPS Only** | Redirect all HTTP to HTTPS; set Strict-Transport-Security |
-| **CORS** | Only allow requests from known UI origins |
-| **Audit Logging** | Log all API calls with user identity and IP address |
-| **Rate Limiting** | Limit requests per user/IP to prevent abuse |
-| **Input Validation** | All inputs validated; SQL injection prevented by EF Core parameterized queries |
+| Concern                | Implementation                                                                 |
+| ---------------------- | ------------------------------------------------------------------------------ |
+| **Token Validation**   | JWT signature verified against Azure's public keys                             |
+| **Token Refresh**      | Tokens expire in 1 hour; use refresh tokens for new ones                       |
+| **Scope-Based Access** | API validates `scp` claim against required scopes                              |
+| **HTTPS Only**         | Redirect all HTTP to HTTPS; set Strict-Transport-Security                      |
+| **CORS**               | Only allow requests from known UI origins                                      |
+| **Audit Logging**      | Log all API calls with user identity and IP address                            |
+| **Rate Limiting**      | Limit requests per user/IP to prevent abuse                                    |
+| **Input Validation**   | All inputs validated; SQL injection prevented by EF Core parameterized queries |
 
 ---
 
@@ -663,14 +678,14 @@ public class OrderManagementE2ETests
 
 #### Testing Tools & Frameworks
 
-| Layer | Framework | Purpose |
-|-------|-----------|---------|
-| Unit | xUnit, NUnit | Fast, isolated tests |
+| Layer       | Framework              | Purpose                    |
+| ----------- | ---------------------- | -------------------------- |
+| Unit        | xUnit, NUnit           | Fast, isolated tests       |
 | Integration | xUnit + TestContainers | Database, RabbitMQ testing |
-| API | RestSharp, HttpClient | HTTP API testing |
-| UI | Selenium, Playwright | Browser automation |
-| Mock | Moq | Dependency mocking |
-| Data | Bogus | Test data generation |
+| API         | RestSharp, HttpClient  | HTTP API testing           |
+| UI          | Selenium, Playwright   | Browser automation         |
+| Mock        | Moq                    | Dependency mocking         |
+| Data        | Bogus                  | Test data generation       |
 
 ---
 
@@ -698,6 +713,7 @@ public class OrderManagementE2ETests
 #### 1. Structured Logging with Serilog
 
 **Configuration**:
+
 ```csharp
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Debug()
@@ -705,22 +721,23 @@ Log.Logger = new LoggerConfiguration()
     .Enrich.WithCorrelationIdHeader()
     .Enrich.WithClientIp()
     .WriteTo.Console(new CompactJsonFormatter())
-    .WriteTo.File("logs/app.log", 
+    .WriteTo.File("logs/app.log",
         outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
     .CreateLogger();
 ```
 
 **Usage with Correlation ID**:
+
 ```csharp
 [HttpPost("api/v1/orders")]
 public async Task<ActionResult<OrderResponse>> CreateOrder(CreateOrderRequest request)
 {
     var correlationId = HttpContext.TraceIdentifier;
-    
+
     using (LogContext.PushProperty("CorrelationId", correlationId))
     {
         _logger.LogInformation("Creating order for customer {CustomerId}", request.CustomerId);
-        
+
         try
         {
             var order = await _orderService.CreateOrderAsync(request);
@@ -737,6 +754,7 @@ public async Task<ActionResult<OrderResponse>> CreateOrder(CreateOrderRequest re
 ```
 
 **Log Output**:
+
 ```json
 {
   "Timestamp": "2026-06-22T10:15:30.123Z",
@@ -752,6 +770,7 @@ public async Task<ActionResult<OrderResponse>> CreateOrder(CreateOrderRequest re
 #### 2. Metrics with Prometheus
 
 **Custom Metrics**:
+
 ```csharp
 // Prometheus metrics
 private static readonly Counter OrdersCreatedCounter = Counter
@@ -773,6 +792,7 @@ using (OrderCreationDuration.NewTimer())
 ```
 
 **Prometheus Endpoint**:
+
 ```csharp
 // Endpoint at /metrics
 app.UseEndpoints(endpoints =>
@@ -782,6 +802,7 @@ app.UseEndpoints(endpoints =>
 ```
 
 **Key Metrics to Track**:
+
 - `orderflow_orders_created_total` - Total orders created
 - `orderflow_order_creation_seconds` - Order creation latency
 - `orderflow_database_query_seconds` - DB query duration
@@ -792,6 +813,7 @@ app.UseEndpoints(endpoints =>
 #### 3. Distributed Tracing with OpenTelemetry
 
 **Configuration**:
+
 ```csharp
 builder.Services.AddOpenTelemetry()
     .WithTracing(tracingBuilder =>
@@ -809,6 +831,7 @@ builder.Services.AddOpenTelemetry()
 ```
 
 **Trace Creation**:
+
 ```csharp
 using var activity = new Activity("CreateOrder").Start();
 activity.AddTag("customer.id", request.CustomerId);
@@ -828,6 +851,7 @@ finally
 ```
 
 **Trace View in Jaeger**:
+
 ```
 Order Creation Trace
 ├── CreateOrder (root span)
@@ -870,6 +894,7 @@ Key panels to monitor:
 #### Database Optimization
 
 **1. Indexing Strategy**:
+
 ```sql
 -- Composite index for order filtering
 CREATE NONCLUSTERED INDEX IX_Orders_Customer_Status_Date
@@ -890,6 +915,7 @@ INCLUDE (CustomerId, Status);
 **2. Query Optimization**:
 
 Before (N+1 query problem):
+
 ```csharp
 // BAD: Creates N+1 queries
 var orders = await _dbContext.Orders.ToListAsync();
@@ -902,6 +928,7 @@ foreach (var order in orders)
 ```
 
 After (eager loading):
+
 ```csharp
 // GOOD: Single query with join
 var orders = await _dbContext.Orders
@@ -912,6 +939,7 @@ var orders = await _dbContext.Orders
 ```
 
 **3. Execution Plan Analysis**:
+
 ```sql
 -- Check for key lookups
 SET STATISTICS IO ON;
@@ -953,10 +981,10 @@ public async Task<Customer> GetCustomerAsync(Guid id)
 
     // Cache miss, query database
     var customer = await _repository.GetByIdAsync(id);
-    
+
     // Store in cache
     await _redis.SetAsync($"customer:{id}", customer, TimeSpan.FromMinutes(5));
-    
+
     return customer;
 }
 
@@ -964,25 +992,26 @@ public async Task<Customer> GetCustomerAsync(Guid id)
 public async Task<Order> CreateOrderAsync(CreateOrderRequest request)
 {
     var order = await _service.CreateOrderAsync(request);
-    
+
     // Write to cache immediately
     await _redis.SetAsync($"order:{order.Id}", order, TimeSpan.FromMinutes(10));
-    
+
     return order;
 }
 ```
 
 **3. Cache Invalidation**:
+
 ```csharp
 // Event-driven invalidation
 public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus newStatus)
 {
     var order = await _repository.UpdateStatusAsync(orderId, newStatus);
-    
+
     // Invalidate related caches
     await _redis.DeleteAsync($"order:{orderId}");
     await _redis.DeleteAsync($"customer-orders:{order.CustomerId}");
-    
+
     return order;
 }
 ```
@@ -990,6 +1019,7 @@ public async Task UpdateOrderStatusAsync(Guid orderId, OrderStatus newStatus)
 #### Backpressure Handling
 
 **1. Rate Limiting**:
+
 ```csharp
 // Per-user rate limiting (100 requests per minute)
 [RateLimitAttribute(100, 60)]
@@ -1006,23 +1036,24 @@ public class RateLimitAttribute : Attribute, IAsyncActionFilter
     {
         var userId = context.HttpContext.User.FindFirst("oid")?.Value;
         var key = $"ratelimit:{userId}";
-        
+
         var count = await _redis.StringIncrementAsync(key);
         if (count == 1)
             await _redis.KeyExpireAsync(key, TimeSpan.FromSeconds(_windowSizeSeconds));
-        
+
         if (count > _requestLimit)
         {
             context.Result = new TooManyRequestsResult();
             return;
         }
-        
+
         await next();
     }
 }
 ```
 
 **2. Queue Depth Monitoring**:
+
 ```csharp
 // Monitor queue depth and trigger alerts
 var queueDeclareOk = channel.QueueDeclarePassive("order-created");
@@ -1044,6 +1075,7 @@ if (messageCount > 10000)
 POPIA is South African data protection regulation requiring:
 
 **1. Data Minimization**:
+
 ```csharp
 public class CustomerResponse
 {
@@ -1055,6 +1087,7 @@ public class CustomerResponse
 ```
 
 **2. Right to be Forgotten**:
+
 ```csharp
 [HttpDelete("api/v1/customers/{id}/personal-data")]
 [Authorize]
@@ -1065,15 +1098,16 @@ public async Task<IActionResult> DeletePersonalData(Guid id)
     customer.Name = "DELETED";
     customer.Email = "deleted@example.com";
     customer.CountryCode = null;
-    
+
     await _repository.UpdateAsync(customer);
     _logger.LogInformation("Personal data deleted for customer {Id}", id);
-    
+
     return Ok();
 }
 ```
 
 **3. Data Retention Policy**:
+
 ```sql
 -- Archive old orders (older than 7 years)
 CREATE PROCEDURE sp_ArchiveOldOrders
@@ -1085,7 +1119,7 @@ BEGIN
     FROM Orders
     WHERE CreatedAt < DATEADD(DAY, -@RetentionDays, GETUTCDATE())
     AND IsArchived = 0;
-    
+
     -- Mark as archived
     UPDATE Orders
     SET IsArchived = 1
@@ -1098,6 +1132,7 @@ EXEC sp_ArchiveOldOrders;
 ```
 
 **4. Consent & Audit Logging**:
+
 ```csharp
 public class AuditLog
 {
@@ -1116,7 +1151,7 @@ public class AuditLog
 public async Task<ActionResult<CustomerResponse>> CreateCustomer(CreateCustomerRequest request)
 {
     var customer = await _service.CreateAsync(request);
-    
+
     // Audit log
     await _auditService.LogAsync(new AuditLog
     {
@@ -1128,12 +1163,13 @@ public async Task<ActionResult<CustomerResponse>> CreateCustomer(CreateCustomerR
         IPAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
         Changes = JsonSerializer.Serialize(customer)
     });
-    
+
     return CreatedAtAction(nameof(GetCustomer), new { id = customer.Id }, customer);
 }
 ```
 
 **5. Encryption at Rest**:
+
 ```sql
 -- Enable Transparent Data Encryption (TDE)
 ALTER DATABASE OrderManagement
@@ -1145,18 +1181,19 @@ SELECT name, is_encrypted FROM sys.databases WHERE name = 'OrderManagement';
 ```
 
 **6. Data Classification**:
+
 ```csharp
 // Mark sensitive fields
 public class Customer
 {
     public Guid Id { get; set; }
-    
+
     [PersonalData]  // POPIA: Personal Information
     public string Name { get; set; }
-    
+
     [PersonalData]  // Email address
     public string Email { get; set; }
-    
+
     [PersonalData]  // Country code (residence info)
     public string CountryCode { get; set; }
 }
@@ -1169,6 +1206,7 @@ public class Customer
 #### Analysis: GraphQL vs REST for OrderFlow
 
 **Current REST Endpoints**:
+
 ```
 GET /api/v1/orders
 GET /api/v1/orders/{id}
@@ -1184,6 +1222,7 @@ PUT /api/v1/orders/{id}/status
 **1. Complex Nested Queries (Medium-High Value)**
 
 **REST Problem** - Over-fetching:
+
 ```bash
 GET /api/orders?customerId=123  # Returns ALL order fields
 # Response: 2MB for 100 orders (1000 orders × 20KB each)
@@ -1192,12 +1231,13 @@ GET /api/orders/456/line-items  # Separate request needed
 ```
 
 **GraphQL Solution**:
+
 ```graphql
 query {
   orders(customerId: "123") {
     id
     createdAt
-    totalAmount  # Only fields needed
+    totalAmount # Only fields needed
     lineItems {
       productSku
       quantity
@@ -1211,6 +1251,7 @@ query {
 **2. Multiple Client Variants (High Value)**
 
 REST requires multiple endpoints:
+
 ```
 GET /api/orders/list  # Light view (ID, amount)
 GET /api/orders/details  # Full view
@@ -1218,6 +1259,7 @@ GET /api/orders/mobile  # Compact view
 ```
 
 GraphQL handles all variants:
+
 ```graphql
 # Web client - full details
 query { orders { id name amount items { * } } }
@@ -1232,6 +1274,7 @@ query { orders { totalAmount status } }
 **3. Reduced Network Calls (Medium Value)**
 
 REST: 5+ requests to assemble customer dashboard
+
 ```
 1. GET /customers/{id}
 2. GET /customers/{id}/orders
@@ -1241,14 +1284,23 @@ REST: 5+ requests to assemble customer dashboard
 ```
 
 GraphQL: Single request
+
 ```graphql
 {
   customer(id: "123") {
     name
-    orders(last: 10) { id amount }
-    topOrders { totalAmount }
+    orders(last: 10) {
+      id
+      amount
+    }
+    topOrders {
+      totalAmount
+    }
   }
-  currencyRates { usd zar }
+  currencyRates {
+    usd
+    zar
+  }
 }
 ```
 
@@ -1339,12 +1391,14 @@ type Customer {
 ```
 
 **When to Add GraphQL**:
+
 1. Multiple client types (web, mobile, dashboard)
 2. Query flexibility is critical
 3. Network bandwidth is expensive
 4. Team is familiar with GraphQL tooling
 
 **Not recommended until**:
+
 1. REST endpoints are stable
 2. Query patterns are well-understood
 3. Team has GraphQL expertise
@@ -1363,7 +1417,7 @@ DECLARE @PageNumber INT = 2;
 DECLARE @PageSize INT = 50;
 DECLARE @Skip INT = (@PageNumber - 1) * @PageSize;
 
-SELECT 
+SELECT
     o.Id,
     o.CustomerId,
     c.Name AS CustomerName,
@@ -1445,7 +1499,7 @@ ORDER BY TotalSpent DESC;
 ```sql
 -- Top spenders with running total
 WITH RankedSpenders AS (
-    SELECT 
+    SELECT
         c.Id,
         c.Name,
         SUM(o.TotalAmount) AS TotalSpent,
@@ -1455,7 +1509,7 @@ WITH RankedSpenders AS (
     WHERE o.CreatedAt >= DATEADD(DAY, -90, GETUTCDATE())
     GROUP BY c.Id, c.Name
 )
-SELECT 
+SELECT
     Id,
     Name,
     TotalSpent,
@@ -1502,12 +1556,12 @@ WHERE Status IN ('Paid', 'Fulfilled');
 
 ```sql
 -- Check index fragmentation
-SELECT 
+SELECT
     OBJECT_NAME(ips.object_id) AS TableName,
     i.name AS IndexName,
     ips.avg_fragmentation_in_percent
 FROM sys.dm_db_index_physical_stats(DB_ID(), NULL, NULL, NULL, 'LIMITED') ips
-INNER JOIN sys.indexes i ON ips.object_id = i.object_id 
+INNER JOIN sys.indexes i ON ips.object_id = i.object_id
     AND ips.index_id = i.index_id
 WHERE ips.avg_fragmentation_in_percent > 10
 ORDER BY ips.avg_fragmentation_in_percent DESC;
@@ -1552,11 +1606,11 @@ INCLUDE (CustomerId, TotalAmount);  -- Include needed columns
 
 #### Before/After Performance
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Logical Reads | 45,000 | 45 |
-| Key Lookups | 500 | 0 |
-| Execution Time | 450ms | 0.5ms |
+| Metric         | Before | After |
+| -------------- | ------ | ----- |
+| Logical Reads  | 45,000 | 45    |
+| Key Lookups    | 500    | 0     |
+| Execution Time | 450ms  | 0.5ms |
 
 ---
 
@@ -1641,7 +1695,7 @@ Thread 2:
   2. Try to lock Orders table (waits...)
      ↓
      Waiting for Thread 1 to release Orders
-     
+
 Result: DEADLOCK! Neither thread can proceed.
 ```
 
@@ -1726,7 +1780,7 @@ ALTER EVENT SESSION DeadlockMonitoring ON SERVER STATE = START;
 
 ```sql
 -- Monthly running total per customer
-SELECT 
+SELECT
     c.Name,
     o.Id,
     o.TotalAmount,
@@ -1758,7 +1812,7 @@ ORDER BY c.Id, o.CreatedAt;
 
 ```sql
 -- Compare order amounts with previous/next order
-SELECT 
+SELECT
     c.Name,
     o.CreatedAt,
     o.TotalAmount,
@@ -1807,12 +1861,12 @@ SELECT * FROM Orders WHERE CreatedAt >= '2026-01-01' AND CreatedAt < '2026-02-01
 
 #### Benefits
 
-| Metric | Before | After |
-|--------|--------|-------|
-| Query Time (1M rows) | 500ms | 50ms |
-| Index Size | 2GB | 200MB per partition |
-| Maintenance Window | 4 hours | 30 minutes |
-| Parallel Queries | 1 thread | 12 threads (one per partition) |
+| Metric               | Before   | After                          |
+| -------------------- | -------- | ------------------------------ |
+| Query Time (1M rows) | 500ms    | 50ms                           |
+| Index Size           | 2GB      | 200MB per partition            |
+| Maintenance Window   | 4 hours  | 30 minutes                     |
+| Parallel Queries     | 1 thread | 12 threads (one per partition) |
 
 ---
 
@@ -1852,27 +1906,27 @@ CREATE PROCEDURE sp_PublishOutboxMessages
 AS
 BEGIN
     SET NOCOUNT ON;
-    
+
     -- Fetch unprocessed messages
     DECLARE @Messages TABLE (
         Id UNIQUEIDENTIFIER,
         EventType NVARCHAR(256),
         Payload NVARCHAR(MAX)
     );
-    
+
     INSERT INTO @Messages
     SELECT TOP (@BatchSize) Id, EventType, Payload
     FROM OutboxMessages
     WHERE Processed = 0
     AND Retries < @MaxRetries
     ORDER BY CreatedAt;
-    
+
     -- Application code publishes these to RabbitMQ
     -- After successful publish, mark as processed
     UPDATE OutboxMessages
     SET Processed = 1, ProcessedAt = GETUTCDATE()
     WHERE Id IN (SELECT Id FROM @Messages);
-    
+
     -- Return for application handling
     SELECT * FROM @Messages;
 END;
@@ -1913,8 +1967,8 @@ CREATE PROCEDURE sp_SalesReportByStatus
 AS
 BEGIN
     SET NOCOUNT ON;
-    
-    SELECT 
+
+    SELECT
         o.Status,
         COUNT(DISTINCT o.Id) AS OrderCount,
         COUNT(DISTINCT o.CustomerId) AS UniqueCustomers,
@@ -1930,7 +1984,7 @@ BEGIN
     WHERE o.CreatedAt >= @StartDate
     AND o.CreatedAt < DATEADD(DAY, 1, @EndDate)
     AND (@CountryCodeFilter IS NULL OR c.CountryCode = @CountryCodeFilter)
-    GROUP BY 
+    GROUP BY
         o.Status,
         o.CurrencyCode,
         CONVERT(VARCHAR(7), o.CreatedAt, 121)
@@ -1981,10 +2035,10 @@ All examples are production-ready and demonstrate senior-level engineering pract
 ✅ **DevOps** - Docker Compose, Kubernetes Helm chart, and GitHub Actions CI/CD pipeline  
 ✅ **Observability** - Serilog structured logging with correlation IDs and metrics framework  
 ✅ **GraphQL** - Read-only endpoint with schema, resolvers, and N+1 query prevention strategy  
-✅ **EF Core Migrations** - Full Code First migration lifecycle with evolution strategies  
+✅ **EF Core Migrations** - Full Code First migration lifecycle with evolution strategies
 
 ### Advanced Features (Not Selected)
 
-⏭️ **FX Conversion** - Not implemented (focused on core requirements and selected advanced features)  
+⏭️ **FX Conversion** - Not implemented (focused on core requirements and selected advanced features)
 
 **Note**: This implementation successfully covers the two required advanced enhancements plus three additional premium features, providing comprehensive demonstration of production-ready patterns.

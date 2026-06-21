@@ -69,86 +69,135 @@ Query Examples:
      }
    }
 """
-
 type Query {
-  """Get all orders with optional filtering"""
+  """
+  Get all orders with optional filtering
+  """
   orders(
-    """Filter by customer ID"""
+    """
+    Filter by customer ID
+    """
     customerId: String
-    """Filter by status (Pending, Paid, Fulfilled, Cancelled)"""
+    """
+    Filter by status (Pending, Paid, Fulfilled, Cancelled)
+    """
     status: String
   ): [Order!]!
 
-  """Get specific order by ID"""
+  """
+  Get specific order by ID
+  """
   order(id: String!): Order
 
-  """Get all customers"""
+  """
+  Get all customers
+  """
   customers: [Customer!]!
 
-  """Get specific customer by ID"""
+  """
+  Get specific customer by ID
+  """
   customer(id: String!): Customer
 }
 
 type Order {
-  """Order unique identifier"""
+  """
+  Order unique identifier
+  """
   id: String!
 
-  """Customer who placed the order"""
+  """
+  Customer who placed the order
+  """
   customerId: String!
 
-  """Order status"""
+  """
+  Order status
+  """
   status: String!
 
-  """Currency code (ISO 4217)"""
+  """
+  Currency code (ISO 4217)
+  """
   currencyCode: String!
 
-  """Total order amount (calculated server-side)"""
+  """
+  Total order amount (calculated server-side)
+  """
   totalAmount: Float!
 
-  """Order creation timestamp"""
+  """
+  Order creation timestamp
+  """
   createdAt: DateTime!
 
-  """Order line items"""
+  """
+  Order line items
+  """
   lineItems: [OrderLineItem!]!
 
-  """Associated customer (N+1 prevention with DataLoader)"""
+  """
+  Associated customer (N+1 prevention with DataLoader)
+  """
   customer: Customer
 }
 
 type OrderLineItem {
-  """Line item unique identifier"""
+  """
+  Line item unique identifier
+  """
   id: String!
 
-  """Product SKU"""
+  """
+  Product SKU
+  """
   productSku: String!
 
-  """Quantity ordered"""
+  """
+  Quantity ordered
+  """
   quantity: Int!
 
-  """Unit price"""
+  """
+  Unit price
+  """
   unitPrice: Float!
 
-  """Calculated line total (quantity × unitPrice)"""
+  """
+  Calculated line total (quantity × unitPrice)
+  """
   lineTotal: Float!
 }
 
 type Customer {
-  """Customer unique identifier"""
+  """
+  Customer unique identifier
+  """
   id: String!
 
-  """Customer name"""
+  """
+  Customer name
+  """
   name: String!
 
-  """Customer email"""
+  """
+  Customer email
+  """
   email: String!
 
-  """ISO 3166-1 alpha-2 country code"""
+  """
+  ISO 3166-1 alpha-2 country code
+  """
   countryCode: String!
 
-  """Customer creation timestamp"""
+  """
+  Customer creation timestamp
+  """
   createdAt: DateTime!
 
-  """Customer's orders (N+1 prevention with DataLoader)"""
+  """
+  Customer's orders (N+1 prevention with DataLoader)
+  """
   orders: [Order!]!
 }
 

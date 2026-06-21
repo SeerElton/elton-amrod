@@ -427,11 +427,11 @@ See [README.md - API Endpoints - GraphQL](../README.md#graphql-endpoint) for que
 
 **When to use GraphQL vs REST:**
 
-| REST                              | GraphQL                      |
-|---|---|
-| Simple CRUD operations            | Complex multi-resource queries |
-| Mobile clients with limited bandwidth | Dashboard/reporting queries  |
-| Strongly typed external API       | Internal flexible API        |
+| REST                                  | GraphQL                        |
+| ------------------------------------- | ------------------------------ |
+| Simple CRUD operations                | Complex multi-resource queries |
+| Mobile clients with limited bandwidth | Dashboard/reporting queries    |
+| Strongly typed external API           | Internal flexible API          |
 
 **GraphQL provides:**
 

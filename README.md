@@ -503,18 +503,19 @@ When running locally with Docker Compose, access the API documentation:
 
 ### Main Endpoints
 
-| Method | Endpoint                      | Purpose                    |
-|--------|-------------------------------|----------------------------|
-| POST   | `/api/v1/customers`           | Create customer            |
-| GET    | `/api/v1/customers`           | Search customers (paginated) |
-| GET    | `/api/v1/customers/{id}`      | Get customer details       |
-| POST   | `/api/v1/orders`              | Create order with line items |
-| GET    | `/api/v1/orders`              | List orders (paginated, filterable) |
-| GET    | `/api/v1/orders/{id}`         | Get order details          |
-| GET    | `/api/v1/orders/customer/{customerId}` | Get customer's orders |
-| PUT    | `/api/v1/orders/{id}/status`  | Update order status (idempotent) |
+| Method | Endpoint                               | Purpose                             |
+| ------ | -------------------------------------- | ----------------------------------- |
+| POST   | `/api/v1/customers`                    | Create customer                     |
+| GET    | `/api/v1/customers`                    | Search customers (paginated)        |
+| GET    | `/api/v1/customers/{id}`               | Get customer details                |
+| POST   | `/api/v1/orders`                       | Create order with line items        |
+| GET    | `/api/v1/orders`                       | List orders (paginated, filterable) |
+| GET    | `/api/v1/orders/{id}`                  | Get order details                   |
+| GET    | `/api/v1/orders/customer/{customerId}` | Get customer's orders               |
+| PUT    | `/api/v1/orders/{id}/status`           | Update order status (idempotent)    |
 
 All endpoints support:
+
 - **Pagination**: `pageSize`, `page` parameters (max pageSize: 100)
 - **Filtering**: Status, customer ID, date ranges
 - **Sorting**: By date, amount, status
@@ -530,7 +531,7 @@ Read-only GraphQL API for flexible querying:
 ### Benefits Over REST
 
 | REST                     | GraphQL                        |
-|--------------------------|--------------------------------|
+| ------------------------ | ------------------------------ |
 | Multiple requests needed | Single request for nested data |
 | Over-fetching data       | Request only needed fields     |
 | N+1 query problem        | Resolved with DataLoaders      |

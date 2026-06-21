@@ -9,7 +9,7 @@ on:
 jobs:
   build-test:
     runs-on: ubuntu-latest
-    
+
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -40,56 +40,56 @@ jobs:
           - 15672:15672
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: "8.0.x"
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
 
-    # Backend Build & Test
-    - name: Restore NuGet packages
-      run: dotnet restore server/OrderManagement.sln
+      # Backend Build & Test
+      - name: Restore NuGet packages
+        run: dotnet restore server/OrderManagement.sln
 
-    - name: Build backend
-      run: dotnet build server/OrderManagement.sln --configuration Release --no-restore
+      - name: Build backend
+        run: dotnet build server/OrderManagement.sln --configuration Release --no-restore
 
-    - name: Run backend tests
-      run: dotnet test server/OrderManagement.sln --configuration Release --no-build --verbosity normal
-      env:
-        ConnectionStrings__DefaultConnection: "Server=localhost;Database=OrderManagement;User Id=sa;Password=TestPassword123!;TrustServerCertificate=True;"
-        RabbitMq__HostName: localhost
-        RabbitMq__UserName: guest
-        RabbitMq__Password: guest
+      - name: Run backend tests
+        run: dotnet test server/OrderManagement.sln --configuration Release --no-build --verbosity normal
+        env:
+          ConnectionStrings__DefaultConnection: "Server=localhost;Database=OrderManagement;User Id=sa;Password=TestPassword123!;TrustServerCertificate=True;"
+          RabbitMq__HostName: localhost
+          RabbitMq__UserName: guest
+          RabbitMq__Password: guest
 
-    # Frontend Build & Test
-    - name: Install frontend dependencies
-      run: cd client && npm ci
+      # Frontend Build & Test
+      - name: Install frontend dependencies
+        run: cd client && npm ci
 
-    - name: Build frontend
-      run: cd client && npm run build
+      - name: Build frontend
+        run: cd client && npm run build
 
-    - name: Run frontend tests
-      run: cd client && npm run test:ci || true
+      - name: Run frontend tests
+        run: cd client && npm run test:ci || true
 
-    # Code Quality
-    - name: Check code formatting (dotnet)
-      run: dotnet format server/OrderManagement.sln --verify-no-changes --verbosity diagnostic || true
+      # Code Quality
+      - name: Check code formatting (dotnet)
+        run: dotnet format server/OrderManagement.sln --verify-no-changes --verbosity diagnostic || true
 
-    # Optional: Upload artifacts
-    - name: Upload build artifacts
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: build-artifacts
-        path: |
-          server/OrderManagement.Api/bin/Release
-          client/dist
+      # Optional: Upload artifacts
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: build-artifacts
+          path: |
+            server/OrderManagement.Api/bin/Release
+            client/dist
 
   docker-build:
     runs-on: ubuntu-latest
@@ -97,24 +97,24 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
 
-    - name: Build Docker images
-      run: |
-        docker-compose build
-      env:
-        DOCKER_BUILDKIT: 1
+      - name: Build Docker images
+        run: |
+          docker-compose build
+        env:
+          DOCKER_BUILDKIT: 1
 
-    - name: Test Docker Compose stack
-      run: |
-        docker-compose up -d
-        sleep 10
-        curl -f http://localhost:5063/swagger/index.html || echo "API health check"
-        curl -f http://localhost:3000 || echo "Client health check"
-        docker-compose down
+      - name: Test Docker Compose stack
+        run: |
+          docker-compose up -d
+          sleep 10
+          curl -f http://localhost:5063/swagger/index.html || echo "API health check"
+          curl -f http://localhost:3000 || echo "Client health check"
+          docker-compose down
 
   notify:
     runs-on: ubuntu-latest
@@ -122,12 +122,12 @@ jobs:
     if: always()
 
     steps:
-    - name: Build status
-      run: |
-        if [ "${{ needs.build-test.result }}" == "success" ] && [ "${{ needs.docker-build.result }}" == "success" ]; then
-          echo "✅ CI/CD Pipeline passed"
-          exit 0
-        else
-          echo "❌ CI/CD Pipeline failed"
-          exit 1
-        fi
+      - name: Build status
+        run: |
+          if [ "${{ needs.build-test.result }}" == "success" ] && [ "${{ needs.docker-build.result }}" == "success" ]; then
+            echo "✅ CI/CD Pipeline passed"
+            exit 0
+          else
+            echo "❌ CI/CD Pipeline failed"
+            exit 1
+          fi
